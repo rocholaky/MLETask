@@ -1,0 +1,30 @@
+name: Titanic
+
+entry_points: 
+  preprocessing: 
+    command: "python models/data_pipelines.py {train_data_path}"
+    parameters:
+      train_data_path:
+        type: str
+        default: Data/train.csv
+    
+  training: 
+    command: "python models/train.py {pipeline_path} {train_data_path} test_data_path:"
+    parameters: 
+      pipeline_path: 
+        type: str
+        default: None
+      train_data_path: 
+        type: str
+        default: Data/train.csv
+      test_data_path: 
+        type: str
+        default: Data/test_csv
+
+  evaluation: 
+    command: "python models/evaluate {data_path}"
+    parameters: 
+      data_path: 
+      type: str
+      default: Data/oot.csv
+  
