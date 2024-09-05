@@ -1,21 +1,12 @@
 import mlflow
 
 from sklearn.pipeline import Pipeline
-import optuna
 from models.piped_models import RandomForestPiped, XGBPiped
-from sklearn.metrics import recall_score, f1_score, precision_score, accuracy_score
+from sklearn.metrics import f1_score
 import numpy as np
-import psutil
-import time
 import pandas as pd
-def get_system_usage():
-    cpu_percent = psutil.cpu_percent(interval=1)
-    ram_info = psutil.virtual_memory()
-    ram_percent = ram_info.percent
-    start_time = time.time()
-    return cpu_percent, ram_percent, start_time
-
-
+from models.util_func import get_system_usage
+from evaluate import evaluate
 class pipedWrapper(mlflow.pyfunc.PythonModel):
     def __init__(self, model):
         self.model = model
@@ -33,27 +24,17 @@ def train_model(model, X_train, y_train,
                                       f1_score)
     ## metrics: 
     cpu_end, ram_end, time_end = get_system_usage()
-    y_pred = model.predict(X_test)
-    recall_test = recall_score(y_test, y_pred)
-    f1_test = f1_score(y_test, y_pred)
-    accuracy_test = accuracy_score(y_test, y_pred)
-    precision_test = precision_score(y_test, y_pred)
     cpu_usage = cpu_end-cpu_initial
     ram_usage = ram_end - ram_initial
     time_usage = time_end - time_initial
-
-
-    # logging results
-    mlflow.log_param(model.get_params(), "param.json")
-    mlflow.log_metric("f1", f1_test)
-    mlflow.log_metric("recall", recall_test)
-    mlflow.log_metric("precision", precision_test)
+    mlflow.log_dict(model.get_params(), "param.json")
     mlflow.log_metric("CPU", cpu_usage)
     mlflow.log_metric("RAM", ram_usage)
     mlflow.log_metric("time", time_usage)
-    wrapped_model = pipedWrapper(model=model.pipeline)
-    run_id = mlflow.active_run().info.run_id
-    mlflow.pyfunc.save_model(path=f"runs:/{run_id}/survival_classifier", python_model=wrapped_model)
+    evaluate(model, X_test, y_test)
+    mlflow.pyfunc.log_model(artifact_path="survival_classifier", python_model=pipedWrapper(model)
+                            )
+
 
 def set_training_experiment(model_name, pipeline_obj,train_path, test_path):
     if model_name == "random_forest":
@@ -70,6 +51,6 @@ def set_training_experiment(model_name, pipeline_obj,train_path, test_path):
     X_test = test_data.drop(columns=["Survived"])
     y_test = test_data["Survived"]
 
-
+    mlflow.log_param("columns", train_data.columns)
     train_model(model,
                 X_train, y_train, X_test, y_test)

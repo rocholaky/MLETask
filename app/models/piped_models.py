@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 import optuna
+import mlflow 
 
 class PipedModel(ABC, BaseEstimator, TransformerMixin):
     def __init__(self, pipeline: Pipeline, **model_kwargs):
@@ -74,7 +75,7 @@ class RandomForestPiped(PipedModel):
 
     @property
     def model_name(self): 
-        return "RandomForestClassifier"
+        return "random_forest"
 
     def optimize_hyper_parameters(self, X_train, y_train, X_test, y_test, 
                                   optimization_score, n_trials=100): 
@@ -112,7 +113,7 @@ class XGBPiped(PipedModel):
         self.pipeline = Pipeline(steps)
     @property
     def model_name(self): 
-        return "XGBClassifier"
+        return "xgboost"
     
     def optimize_hyper_parameters(self, X_train, y_train, X_test, y_test, 
                                   optimization_score, n_trials=100): 
@@ -127,9 +128,10 @@ class XGBPiped(PipedModel):
                     'reg_alpha': trial.suggest_float('reg_alpha', 1e-4, 1e2, log=True),
                     'reg_lambda': trial.suggest_float('reg_lambda', 1e-4, 1e2, log=True),
                 }
-            self.set_parameters(**param_grid).fit(X_train, y_train)
+            self.set_parameters(**param_grid)
+            self.pipeline.fit(X_train, y_train)
             # generate prediction
-            y_pred = self.predict(X_test, y_test)
+            y_pred = self.predict(X_test)
 
             test_f1 = optimization_score(y_test, y_pred)
             return test_f1
