@@ -4,10 +4,12 @@ from abc import ABC, abstractmethod
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 import optuna
-import mlflow 
 
+## The PipedModel class is generated to wrap the logic of using a pipeline and 
+## adding the neccesary models, here you can also tune the hyper parameters using optuna
 class PipedModel(ABC, BaseEstimator, TransformerMixin):
     def __init__(self, pipeline: Pipeline, **model_kwargs):
+        # prepare the pipeline for the model 
         self.pipeline =self.__prepare_pipeline(pipeline)
         self.set_model(self.pipeline, **model_kwargs)
 
@@ -15,7 +17,8 @@ class PipedModel(ABC, BaseEstimator, TransformerMixin):
     @abstractmethod
     def set_model(self, pipeline, **model_kwargs):
         '''
-        Abstract Class, method should implement the model
+        Abstract Class, method should implement the model and 
+        set the corresponding model
         '''
         pass
 

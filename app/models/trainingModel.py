@@ -1,11 +1,11 @@
 import mlflow
 
 from sklearn.pipeline import Pipeline
-from models.piped_models import RandomForestPiped, XGBPiped
+from app.models.piped_models import RandomForestPiped, XGBPiped
 from sklearn.metrics import f1_score
 import numpy as np
 import pandas as pd
-from models.util_func import get_system_usage
+from app.models.util_func import get_system_usage
 from evaluate import evaluate
 class pipedWrapper(mlflow.pyfunc.PythonModel):
     def __init__(self, model):
@@ -54,3 +54,4 @@ def set_training_experiment(model_name, pipeline_obj,train_path, test_path):
     mlflow.log_param("columns", train_data.columns)
     train_model(model,
                 X_train, y_train, X_test, y_test)
+    

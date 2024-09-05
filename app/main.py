@@ -1,43 +1,52 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from typing import List, Optional
+from pydantic import BaseModel, conint, confloat, PositiveFloat
+from typing import List, Optional, Literal
 import joblib
 import pandas as pd
 from dotenv import load_dotenv
 import mlflow
+from mlflow.tracking import MlflowClient
+import os
 import uvicorn
-
+from app.models.evaluation import get_model
 
 load_dotenv("config.env")
-
+experiment_name = os.getenv("train_experiment")
+model_name= os.getenv("model_name")
+mlflow_tracking_path = os.getenv("mlflow_train_tracking")
+mlflow.set_tracking_uri(mlflow_tracking_path)
 app = FastAPI()
 
 
-# Define the request model
+# Define the passanger body
+# this represents a row in the Passenger 
 class Passenger(BaseModel):
-    PassengerId: int
-    Pclass: int
+    PassengerId: str
+    Pclass: conint(ge=1, le=3)
     Name: str
-    Sex: str
-    Age: Optional[float] = None
-    SibSp: int
-    Parch: int
-    Ticket: str
-    Fare: float
+    Sex: Literal["male", "female"]
+    Age: Optional[confloat(gt=0, lt=120)] = None
+    SibSp: conint(ge=0)
+    Parch: conint(ge=0)
+    Fare: PositiveFloat
     Cabin: Optional[str] = None
-    Embarked: str
+    Embarked: Optional[Literal["S", "C", "Q"]]
+    Ticket: Optional[str] =None
+
+    
 
 class PassengerList(BaseModel):
     passengers: List[Passenger]
 
 @app.post("/predict/")
 async def predict_survival(passenger_list: PassengerList):
+    print("Experiment", mlflow_tracking_path, experiment_name)
     # Convert the list of passengers to a DataFrame
     df = pd.DataFrame([passenger.model_dump() for passenger in passenger_list.passengers])
     
-    # Prepare the features
-    df = df[['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked']]
-    
+    #try: 
+    model = get_model(experiment_name, model_name)
+    #    raise ValueError(f"There is no model in staging called {model_name}_survival_classifier please run the train rutine")
     
     # Make predictions
     predictions = model.predict(df)
