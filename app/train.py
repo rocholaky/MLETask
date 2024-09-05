@@ -1,6 +1,6 @@
 # importing mlflow
 import mlflow
-
+from mlflow import mlflowClient
 ## virtual environment 
 import argparse
 import pandas as pd
@@ -26,11 +26,11 @@ if __name__ == "__main__":
     load_dotenv("config.env")
     experiment_name = os.getenv("train_experiment")
     model_name = os.getenv("model_name")
+    client= mlflowClient()
     mlflow.set_experiment(experiment_name)
     with mlflow.start_run() as run: 
         train(model_name, args.train_data_path, args.test_data_path)
     
-
 
 
 
