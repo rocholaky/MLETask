@@ -1,30 +1,23 @@
 name: Titanic
+conda_env: python_env.yml
 
-entry_points: 
-  preprocessing: 
-    command: "python models/data_pipelines.py {train_data_path}"
+entry_points:
+  training:
     parameters:
+      model_name:
+        type: str
+        default: "random_forest"
       train_data_path:
         type: str
-        default: Data/train.csv
-    
-  training: 
-    command: "python models/train.py {pipeline_path} {train_data_path} test_data_path:"
-    parameters: 
-      pipeline_path: 
+        default: "Data/train.csv"
+      test_data_path:
         type: str
-        default: None
-      train_data_path: 
-        type: str
-        default: Data/train.csv
-      test_data_path: 
-        type: str
-        default: Data/test_csv
+        default: "Data/test.csv"
+    command: "python app/train.py --train_data_path {train_data_path} --test_data_path {test_data_path} --model_name {model_name}"
 
-  evaluation: 
-    command: "python models/evaluate {data_path}"
-    parameters: 
-      data_path: 
-      type: str
-      default: Data/oot.csv
-  
+  evaluation:
+    parameters:
+      data_path:
+        type: str
+        default: "Data/oot.csv"
+    command: "python models/evaluate --data_path {data_path}"

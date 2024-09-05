@@ -1,0 +1,10 @@
+name: TitanicRappi
+channels:
+  - defaults
+dependencies:
+  - python=3.10.8
+  - pip
+  - setuptools
+  - wheel
+  - pip:
+    - -r requirements.txt
