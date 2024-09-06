@@ -16,7 +16,7 @@ The Titanic ML Package offers the following key features:
 
 - **API For survivors:** A API where by sending the information about the person such as: 'Age', 'Embarked', 'PassengerId', 'Pclass', 'Name', 'Sex', 'SibSp','Parch', 'Ticket', 'Fare', 'Cabin' the model generates a prediction about the survival of that person. In specific the model uses the variables: "Embarked", "Sex", "Pclass", "Age", "SibSp", "Parch", "Fare".
 
-- **Model Training and Evaluation:** The package provides a streamlined workflow for training machine learning models on the Titanic dataset. Users can experiment with different algorithms (random_forest and xgboost), optimize hyperparameters using the optuna library The package also includes evaluation the Accuracy, precision, recall and F1Score metric. The logging of the models is done using Mlflow. 
+- **Model Training and Evaluation:** The package provides a streamlined workflow for training machine learning models on the Titanic dataset. Users can experiment with different algorithms (random_forest and xgboost), optimize hyperparameters using the optuna library The package also includes evaluation the Accuracy, precision, recall and F1Score metric. The logging of the models is done using Mlflow. For this dataset the most important features turned out to be Sex, Age and Fare with importances of 0.23, 0.229 and 0.357. 
 
 ## Getting Started
 
@@ -25,3 +25,6 @@ To get started with the MLETask Package you just need to clone the repository an
 ### Usage: 
 search for the build_docker.sh and run it in the CMD. Once the code ends its run two docker containers will be deployed one for the model training and another one for the api service. In specific the localhost:8000 endpoint is used fot the API where you can use the localhost:8000/predict endpoint. 
 On the localhost:5000 endpoint you should see the mlflow ui that is shown in order to check the models metrics. 
+
+## Scaling the model: 
+If scaling was needed the model could be paralelised using pyspark and different clusters, the worloads could be handled using kubernetes in order to set different pods. By using this considerations and async endpoints for the API large amounts of data should be handled properly. This could be done both on a private server or by using cloud solutions in order to automate the workload and cluster management. 
