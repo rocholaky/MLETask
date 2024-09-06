@@ -1,5 +1,6 @@
 #!/bin/bash
-
+# code to train the model, then evaluate 
+# it and finally show the mlflow ui
 # Exit immediately if a command exits with a non-zero status
 set -e
 

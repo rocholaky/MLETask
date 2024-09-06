@@ -10,11 +10,15 @@ import os
 import uvicorn
 from app.models.evaluation import get_model
 
+
+## load environmental variables
 load_dotenv("config.env")
 experiment_name = os.getenv("train_experiment")
 model_name= os.getenv("model_name")
 mlflow_tracking_path = os.getenv("mlflow_train_tracking")
 mlflow.set_tracking_uri(mlflow_tracking_path)
+
+# start server
 app = FastAPI()
 
 
@@ -34,19 +38,22 @@ class Passenger(BaseModel):
     Ticket: Optional[str] =None
 
     
-
+# this represents a list of passengers
 class PassengerList(BaseModel):
     passengers: List[Passenger]
 
+
+## post method to predict
 @app.post("/predict/")
 async def predict_survival(passenger_list: PassengerList):
     print("Experiment", mlflow_tracking_path, experiment_name)
     # Convert the list of passengers to a DataFrame
     df = pd.DataFrame([passenger.model_dump() for passenger in passenger_list.passengers])
     
-    #try: 
-    model = get_model(experiment_name, model_name)
-    #    raise ValueError(f"There is no model in staging called {model_name}_survival_classifier please run the train rutine")
+    try: 
+        model = get_model(experiment_name, model_name)
+    except: 
+        raise HTTPException(code=400, detail=f"There is no model in staging called {model_name}_survival_classifier please run the train rutine")
     
     # Make predictions
     predictions = model.predict(df)

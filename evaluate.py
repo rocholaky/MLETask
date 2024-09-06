@@ -8,6 +8,10 @@ import os
 import pandas as pd
 
 if __name__ == "__main__":
+
+    '''
+    Script to start the evaluation process
+    '''
     parser = argparse.ArgumentParser()    
     parser.add_argument("--data_path", type=str, default="Data/test.csv",required=False, help="Path to the training data")
     args = parser.parse_args()
