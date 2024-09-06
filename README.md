@@ -14,19 +14,14 @@ The main purpose of this package is to provide a user-friendly and efficient sol
 
 The Titanic ML Package offers the following key features:
 
-- **API For survivors:** 
+- **API For survivors:** A API where by sending the information about the person such as: 'Age', 'Embarked', 'PassengerId', 'Pclass', 'Name', 'Sex', 'SibSp','Parch', 'Ticket', 'Fare', 'Cabin' the model generates a prediction about the survival of that person. In specific the model uses the variables: "Embarked", "Sex", "Pclass", "Age", "SibSp", "Parch", "Fare".
 
-- **Model Training and Evaluation:** The package provides a streamlined workflow for training machine learning models on the Titanic dataset. Users can experiment with different algorithms, hyperparameters The package also includes evaluation the Accuracy, precision, recall and F1Score metric. 
+- **Model Training and Evaluation:** The package provides a streamlined workflow for training machine learning models on the Titanic dataset. Users can experiment with different algorithms (random_forest and xgboost), optimize hyperparameters using the optuna library The package also includes evaluation the Accuracy, precision, recall and F1Score metric. The logging of the models is done using Mlflow. 
 
 ## Getting Started
 
 To get started with the MLETask Package you just need to clone the repository and run the following code: 
-### Install : 
-1. install anaconda: https://dev.to/waylonwalker/installing-miniconda-on-linux-from-the-command-line-4ad7
-2. install environment: 
-```bash
-conda env create -f environment.yml
-```
 
 ### Usage: 
-
+search for the build_docker.sh and run it in the CMD. Once the code ends its run two docker containers will be deployed one for the model training and another one for the api service. In specific the localhost:8000 endpoint is used fot the API where you can use the localhost:8000/predict endpoint. 
+On the localhost:5000 endpoint you should see the mlflow ui that is shown in order to check the models metrics. 
